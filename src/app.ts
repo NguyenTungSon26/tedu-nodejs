@@ -17,8 +17,9 @@ class App {
         this.port = process.env.PORT || 5000
         this.production = process.env.NODE_ENV == "production" ? true : false
         this.connectToDatabase()
-        this.initializeMiddlewares()
+        this.initializeMiddleware()
         this.initializeRoutes(routes)
+        this.initializeErrorMiddleware()
     }
 
     public listen(){
@@ -34,7 +35,7 @@ class App {
         })
     
     }
-    private initializeMiddlewares(){
+    private initializeMiddleware(){
         if(this.production){
             this.app.use(hpp())
             this.app.use(helmet())
@@ -44,9 +45,11 @@ class App {
             this.app.use(morgan("dev"))
             this.app.use(cors({origin:true,credentials:true}))
         }
-        this.app.use(errorMiddleware)
         this.app.use(express.json())    
         this.app.use(express.urlencoded({extended:true}))
+    }
+    private initializeErrorMiddleware(){
+        this.app.use(errorMiddleware)
     }
 
     private connectToDatabase(){
